@@ -95,7 +95,7 @@ MANAGERS = ADMINS
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [
-    "ec2-54-200-2-148.us-west-2.compute.amazonaws.com",
+    "ec2-54-200-27-194.us-west-2.compute.amazonaws.com",
 ]
 
 # Local time zone for this installation. Choices can be found here:
@@ -105,7 +105,7 @@ ALLOWED_HOSTS = [
 # timezone as the operating system.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = None
+TIME_ZONE = "America/Boise"
 
 # If you set this to True, Django will use timezone-aware datetimes.
 USE_TZ = True
@@ -311,6 +311,9 @@ OPTIONAL_APPS = (
     PACKAGE_NAME_GRAPPELLI,
 )
 
+SECRET_KEY = "3f7712ff-0e8d-4b9b-8dd9-200768491b3a080aaacf-da02-4f17-87d6-10b0a3fea4ca87057767-c13a-4879-b918-a4427a07dcb9"
+NEVERCACHE_KEY = "c6c61c9a-f815-4e95-a8c5-bf5cf4adc4c0b9b6df79-2b16-4c98-883f-4d10329ffe439fce6169-bd7f-4d4d-81da-b94f792ded86"
+
 ###################
 # DEPLOY SETTINGS #
 ###################
@@ -319,12 +322,14 @@ OPTIONAL_APPS = (
 # Check fabfile.py for defaults.
 
 FABRIC = {
-    "SSH_USER": "ec2-user", # SSH username for host deploying to
+    "SSH_USER": "ubuntu", # SSH username for host deploying to
+    "SSH_KEY_PATH": "~/.ec2/rob-key-pair.pem",
     "HOSTS": ALLOWED_HOSTS[:1], # List of hosts to deploy to (eg, first host)
     "DOMAINS": ALLOWED_HOSTS, # Domains for public site
-    "REPO_URL": "ssh://hg@bitbucket.org/user/project", # Project's repo URL
+    # "REPO_URL": "ssh://hg@bitbucket.org/user/project", # Project's repo URL
+    "REPO_URL": "ssh://git@github.com:orInge/mezzanine-base.git", # Project's repo URL
     "VIRTUALENV_HOME":  "", # Absolute remote path for virtualenvs
-    "PROJECT_NAME": "", # Unique identifier for project
+    "PROJECT_NAME": "mezzanine-base", # Unique identifier for project
     "REQUIREMENTS_PATH": "requirements.txt", # Project's pip requirements
     "GUNICORN_PORT": 8000, # Port gunicorn will listen on
     "LOCALE": "en_US.UTF-8", # Should end with ".UTF-8"
