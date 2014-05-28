@@ -327,9 +327,9 @@ FABRIC = {
     "HOSTS": ALLOWED_HOSTS[:1], # List of hosts to deploy to (eg, first host)
     "DOMAINS": ALLOWED_HOSTS, # Domains for public site
     # "REPO_URL": "ssh://hg@bitbucket.org/user/project", # Project's repo URL
-    "REPO_URL": "ssh://git@github.com:orInge/mezzanine-base.git", # Project's repo URL
+    "REPO_URL": "git@github.com:orInge/mezzanine-base.git", # Project's repo URL
     "VIRTUALENV_HOME":  "", # Absolute remote path for virtualenvs
-    "PROJECT_NAME": "mezzanine-base", # Unique identifier for project
+    "PROJECT_NAME": "mezzanine_base", # Unique identifier for project
     "REQUIREMENTS_PATH": "requirements.txt", # Project's pip requirements
     "GUNICORN_PORT": 8000, # Port gunicorn will listen on
     "LOCALE": "en_US.UTF-8", # Should end with ".UTF-8"
