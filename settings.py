@@ -318,26 +318,25 @@ OPTIONAL_APPS = (
 # These settings are used by the default fabfile.py provided.
 # Check fabfile.py for defaults.
 
-SECRET_KEY = "c7f8223d-91ef-4d9a-920f-b25c950a5ac0a67bb04f-301e-407c-9c20-aa7a96a6815b557d01eb-ca32-4632-95fb-8954d56e985f"
-NEVERCACHE_KEY = "6e7d3578-b313-48ac-93ed-06ea96e788d9b5f619dc-2611-4bf7-9411-cceff8fb11133ab65f44-ee3a-4b7a-ba27-86660c861dc4"
+# SECRET_KEY = "c7f8223d-91ef-4d9a-920f-b25c950a5ac0a67bb04f-301e-407c-9c20-aa7a96a6815b557d01eb-ca32-4632-95fb-8954d56e985f"
+# NEVERCACHE_KEY = "6e7d3578-b313-48ac-93ed-06ea96e788d9b5f619dc-2611-4bf7-9411-cceff8fb11133ab65f44-ee3a-4b7a-ba27-86660c861dc4"
 
-FABRIC = {
-    "SSH_USER": "ubuntu", # SSH username for host deploying to
-    "SSH_KEY_PATH": "~/.ec2/rob-key-pair.pem",
-    "HOSTS": ALLOWED_HOSTS[:1], # List of hosts to deploy to (eg, first host)
-    "DOMAINS": ALLOWED_HOSTS, # Domains for public site
-    # "REPO_URL": "ssh://hg@bitbucket.org/user/project", # Project's repo URL
-    "REPO_URL": "https://github.com/orInge/mezzanine-base.git", # Project's repo URL
-    "VIRTUALENV_HOME":  "", # Absolute remote path for virtualenvs
-    "PROJECT_NAME": "mezzanine_base", # Unique identifier for project
-    "REQUIREMENTS_PATH": "requirements.txt", # Project's pip requirements
-    "GUNICORN_PORT": 8000, # Port gunicorn will listen on
-    "LOCALE": "en_US.UTF-8", # Should end with ".UTF-8"
-    "DB_PASS": "", # Live database password
-    "ADMIN_PASS": "", # Live admin user password
-    "SECRET_KEY": SECRET_KEY,
-    "NEVERCACHE_KEY": NEVERCACHE_KEY,
-}
+# FABRIC = {
+#     "SSH_USER": "ubuntu", # SSH username for host deploying to
+#     "SSH_KEY_PATH": "~/.ec2/rob-key-pair.pem",
+#     "HOSTS": ALLOWED_HOSTS[:1], # List of hosts to deploy to (eg, first host)
+#     "DOMAINS": ALLOWED_HOSTS, # Domains for public site
+#     "REPO_URL": "https://github.com/orInge/mezzanine-base.git", # Project's repo URL
+#     "VIRTUALENV_HOME":  "", # Absolute remote path for virtualenvs
+#     "PROJECT_NAME": "mezzanine_base", # Unique identifier for project
+#     "REQUIREMENTS_PATH": "requirements.txt", # Project's pip requirements
+#     "GUNICORN_PORT": 8000, # Port gunicorn will listen on
+#     "LOCALE": "en_US.UTF-8", # Should end with ".UTF-8"
+#     "DB_PASS": "", # Live database password
+#     "ADMIN_PASS": "", # Live admin user password
+#     "SECRET_KEY": SECRET_KEY,
+#     "NEVERCACHE_KEY": NEVERCACHE_KEY,
+# }
 
 
 ##################

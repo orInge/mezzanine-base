@@ -41,9 +41,9 @@ env.hosts = conf.get("HOSTS", [""])
 
 env.proj_name = conf.get("PROJECT_NAME", os.getcwd().split(os.sep)[-1])
 env.venv_home = conf.get("VIRTUALENV_HOME", "/home/%s" % env.user)
-env.venv_path = "%s/%s" % (env.venv_home, env.proj_name)
+env.venv_path = "%s/%s" % (env.venv_home, env.proj_name) # /home/ubuntu/mezzanine_base
 env.proj_dirname = "project"
-env.proj_path = "%s/%s" % (env.venv_path, env.proj_dirname)
+env.proj_path = "%s/%s" % (env.venv_path, env.proj_dirname) # /home/ubuntu/mezzanine_base/project
 env.manage = "%s/bin/python %s/project/manage.py" % ((env.venv_path,) * 2)
 env.domains = conf.get("DOMAINS", [conf.get("LIVE_HOSTNAME", env.hosts[0])])
 env.domains_nginx = " ".join(env.domains)
