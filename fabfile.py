@@ -40,7 +40,7 @@ env.key_filename = conf.get("SSH_KEY_PATH", None)
 env.hosts = conf.get("HOSTS", [""])
 
 env.proj_name = conf.get("PROJECT_NAME", os.getcwd().split(os.sep)[-1])
-env.venv_home = conf.get("VIRTUALENV_HOME", "/home/%s" % env.user)
+env.venv_home = conf.get("VIRTUALENV_HOME", "/home/%s" % env.user) # /home/ubuntu
 env.venv_path = "%s/%s" % (env.venv_home, env.proj_name) # /home/ubuntu/mezzanine_base
 env.proj_dirname = "project"
 env.proj_path = "%s/%s" % (env.venv_path, env.proj_dirname) # /home/ubuntu/mezzanine_base/project
@@ -350,9 +350,9 @@ def install():
             run("exit")
     sudo("apt-get update -y -q")
     apt("nginx libjpeg-dev python-dev python-setuptools git-core "
-        "postgresql libpq-dev memcached supervisor")
+        "libpq-dev memcached supervisor")
     sudo("easy_install pip")
-    sudo("pip install virtualenv mercurial")
+    sudo("pip install virtualenv")
 
 
 @task
@@ -366,7 +366,7 @@ def create():
     """
 
     # Create virtualenv
-    with cd(env.venv_home):
+    with cd(env.venv_home): # /home/ubuntu
         if exists(env.proj_name):
             prompt = input("\nVirtualenv exists: %s"
                            "\nWould you like to replace it? (yes/no) "
@@ -375,20 +375,19 @@ def create():
                 print("\nAborting!")
                 return False
             remove()
-        run("virtualenv %s --distribute" % env.proj_name)
-        vcs = "git" if env.git else "hg"
-        run("%s clone %s %s" % (vcs, env.repo_url, env.proj_path))
+        run("virtualenv env --setuptools")
+        run("git clone %s %s" % (env.repo_url, env.proj_path))
 
     # Create DB and DB user.
-    pw = db_pass()
-    user_sql_args = (env.proj_name, pw.replace("'", "\'"))
-    user_sql = "CREATE USER %s WITH ENCRYPTED PASSWORD '%s';" % user_sql_args
-    psql(user_sql, show=False)
-    shadowed = "*" * len(pw)
-    print_command(user_sql.replace("'%s'" % pw, "'%s'" % shadowed))
-    psql("CREATE DATABASE %s WITH OWNER %s ENCODING = 'UTF8' "
-         "LC_CTYPE = '%s' LC_COLLATE = '%s' TEMPLATE template0;" %
-         (env.proj_name, env.proj_name, env.locale, env.locale))
+    # pw = db_pass()
+    # user_sql_args = (env.proj_name, pw.replace("'", "\'"))
+    # user_sql = "CREATE USER %s WITH ENCRYPTED PASSWORD '%s';" % user_sql_args
+    # psql(user_sql, show=False)
+    # shadowed = "*" * len(pw)
+    # print_command(user_sql.replace("'%s'" % pw, "'%s'" % shadowed))
+    # psql("CREATE DATABASE %s WITH OWNER %s ENCODING = 'UTF8' "
+    #      "LC_CTYPE = '%s' LC_COLLATE = '%s' TEMPLATE template0;" %
+    #      (env.proj_name, env.proj_name, env.locale, env.locale))
 
     # Set up SSL certificate.
     if not env.ssl_disabled:
@@ -417,7 +416,7 @@ def create():
             pip("-r %s/%s" % (env.proj_path, env.reqs_path))
         pip("gunicorn setproctitle south psycopg2 "
             "django-compressor python-memcached")
-        manage("createdb --noinput --nodata")
+        # manage("createdb --noinput --nodata")
         python("from django.conf import settings;"
                "from django.contrib.sites.models import Site;"
                "Site.objects.filter(id=settings.SITE_ID).update(domain='%s');"
@@ -495,15 +494,15 @@ def deploy():
     for name in get_templates():
         upload_template_and_reload(name)
     with project():
-        backup("last.db")
+        # backup("last.db")
         static_dir = static()
         if exists(static_dir):
             run("tar -cf last.tar %s" % static_dir)
         git = env.git
-        last_commit = "git rev-parse HEAD" if git else "hg id -i"
+        last_commit = "git rev-parse HEAD"
         run("%s > last.commit" % last_commit)
         with update_changed_requirements():
-            run("git pull origin master -f" if git else "hg pull && hg up -C")
+            run("git pull origin master -f")
         manage("collectstatic -v 0 --noinput")
         manage("syncdb --noinput")
         manage("migrate --noinput")
