@@ -40,10 +40,10 @@ env.key_filename = conf.get("SSH_KEY_PATH", None)
 env.hosts = conf.get("HOSTS", [""])
 
 env.proj_name = conf.get("PROJECT_NAME", os.getcwd().split(os.sep)[-1])
-env.venv_home = conf.get("VIRTUALENV_HOME", "/home/%s" % env.user) # /home/ubuntu
-env.venv_path = "%s/%s" % (env.venv_home, env.proj_name) # /home/ubuntu/mezzanine_base
+env.venv_home = conf.get("VIRTUALENV_HOME", "/home/%s" % env.user)
+env.venv_path = "%s/%s" % (env.venv_home, env.proj_name)
 env.proj_dirname = "project"
-env.proj_path = "%s/%s" % (env.venv_path, env.proj_dirname) # /home/ubuntu/mezzanine_base/project
+env.proj_path = "%s/%s" % (env.venv_path, env.proj_dirname)
 env.manage = "%s/bin/python %s/project/manage.py" % ((env.venv_path,) * 2)
 env.domains = conf.get("DOMAINS", [conf.get("LIVE_HOSTNAME", env.hosts[0])])
 env.domains_nginx = " ".join(env.domains)
@@ -366,16 +366,9 @@ def create():
     """
 
     # Create virtualenv
-    with cd(env.venv_home): # /home/ubuntu
-        if exists(env.proj_name):
-            prompt = input("\nVirtualenv exists: %s"
-                           "\nWould you like to replace it? (yes/no) "
-                           % env.proj_name)
-            if prompt.lower() != "yes":
-                print("\nAborting!")
-                return False
-            remove()
-        run("virtualenv env --setuptools")
+    with cd(env.venv_home):
+        if not exists(env.proj_name):
+            run("virtualenv %s" % env.proj_name)
         run("git clone %s %s" % (env.repo_url, env.proj_path))
 
     # Create DB and DB user.
@@ -498,8 +491,7 @@ def deploy():
         static_dir = static()
         if exists(static_dir):
             run("tar -cf last.tar %s" % static_dir)
-        git = env.git
-        last_commit = "git rev-parse HEAD"
+        last_commit = "git rev-parse HEAD" 
         run("%s > last.commit" % last_commit)
         with update_changed_requirements():
             run("git pull origin master -f")

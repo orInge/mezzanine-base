@@ -95,7 +95,8 @@ MANAGERS = ADMINS
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = [
-    'ec2-54-186-201-201.us-west-2.compute.amazonaws.com',
+    'ec2-54-201-43-123.us-west-2.compute.amazonaws.com',
+    '127.0.0.1',
 ]
 
 # Local time zone for this installation. Choices can be found here:
@@ -324,7 +325,7 @@ FABRIC = {
     "HOSTS": ALLOWED_HOSTS[:1], # List of hosts to deploy to (eg, first host)
     "DOMAINS": ALLOWED_HOSTS, # Domains for public site
     "REPO_URL": "https://github.com/orInge/mezzanine-base.git", # Project's repo URL
-    "VIRTUALENV_HOME":  "", # Absolute remote path for virtualenvs
+    "VIRTUALENV_HOME":  "/home/ubuntu", # Absolute remote path for virtualenvs
     "PROJECT_NAME": "mezzanine_base", # Unique identifier for project
     "REQUIREMENTS_PATH": "requirements.txt", # Project's pip requirements
     "GUNICORN_PORT": 8000, # Port gunicorn will listen on
