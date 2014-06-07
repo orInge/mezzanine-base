@@ -158,28 +158,6 @@ STATICFILES_FINDERS = (
 FILE_UPLOAD_PERMISSIONS = 0o644
 
 
-#############
-# DATABASES #
-#############
-
-DATABASES = {
-    "default": {
-        # Add "postgresql_psycopg2", "mysql", "sqlite3" or "oracle".
-        "ENGINE": "django.db.backends.mysql",
-        # DB name or path to database file if using sqlite3.
-        "NAME": "mezzanine",
-        # Not used with sqlite3.
-        "USER": "admin",
-        # Not used with sqlite3.
-        "PASSWORD": "admin",
-        # Set to empty string for localhost. Not used with sqlite3.
-        "HOST": "",
-        # Set to empty string for default. Not used with sqlite3.
-        "PORT": "",
-    }
-}
-
-
 #########
 # PATHS #
 #########
@@ -334,17 +312,17 @@ OPTIONAL_APPS = (
 # }
 
 
-##################
-# LOCAL SETTINGS #
-##################
+#######################
+# LOCAL/LIVE SETTINGS #
+#######################
 
-# Allow any settings to be defined in local_settings.py which should be
-# ignored in your version control system allowing for settings to be
-# defined per machine.
-try:
-    from local_settings import *
-except ImportError:
-    pass
+if os.environ.get('DATABASE_URL'):
+    from live_settings import *
+else:
+    try:
+        from local_settings import *
+    except ImportError:
+        pass
 
 
 ####################
