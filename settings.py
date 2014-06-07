@@ -250,6 +250,7 @@ INSTALLED_APPS = (
     "mezzanine.twitter",
     #"mezzanine.accounts",
     #"mezzanine.mobile",
+    "gunicorn",
 )
 
 # List of processors used by RequestContext to populate the context.
@@ -362,3 +363,8 @@ except ImportError:
     pass
 else:
     set_dynamic_settings(globals())
+
+    
+LOGGING = {
+    'version': 1,
+}
