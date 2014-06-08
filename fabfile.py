@@ -380,29 +380,11 @@ def create():
     # Set up project.
     upload_template_and_reload("settings")
     with project(): # /home/ubuntu/mezzanine_base/project
-        pip("-r /home/ubuntu/mezzanine_base/project/requirements.txt")
+        pip("-r %s/requirements.txt" % (env.proj_path))
         pip("setproctitle south psycopg2 "
             "django-compressor python-memcached")
         # manage("createdb --noinput --nodata")
-        python("from django.conf import settings;"
-               "from django.contrib.sites.models import Site;"
-               "Site.objects.filter(id=settings.SITE_ID).update(domain='%s');"
-               % env.domains[0])
-        for domain in env.domains:
-            python("from django.contrib.sites.models import Site;"
-                   "Site.objects.get_or_create(domain='%s');" % domain)
-        if env.admin_pass:
-            pw = env.admin_pass
-            user_py = ("from mezzanine.utils.models import get_user_model;"
-                       "User = get_user_model();"
-                       "u, _ = User.objects.get_or_create(username='admin');"
-                       "u.is_staff = u.is_superuser = True;"
-                       "u.set_password('%s');"
-                       "u.save();" % pw)
-            python(user_py, show=False)
-            shadowed = "*" * len(pw)
-            print_command(user_py.replace("'%s'" % pw, "'%s'" % shadowed))
-
+        # TODO: update Site and User models
     return True
 
 
@@ -445,32 +427,19 @@ def restart():
 def deploy():
     """
     Deploy latest version of the project.
-    Check out the latest version of the project from version
-    control, install new requirements, sync and migrate the database,
-    collect any new static assets, and restart gunicorn's work
-    processes for the project.
+    pull latest from vcs,
+    install new requirements, 
+    sync and migrate the database,
+    collect any new static assets, and 
+    restart gunicorn's work processes for the project.
     """
-    if not exists(env.venv_path):
-        prompt = input("\nVirtualenv doesn't exist: %s"
-                       "\nWould you like to create it? (yes/no) "
-                       % env.proj_name)
-        if prompt.lower() != "yes":
-            print("\nAborting!")
-            return False
-        create()
     for name in get_templates():
         upload_template_and_reload(name)
     with project():
-        # backup("last.db")
         static_dir = static()
-        if exists(static_dir):
-            run("tar -cf last.tar %s" % static_dir)
-        git = env.git
-        last_commit = "git rev-parse HEAD" if git else "hg id -i"
-        run("%s > last.commit" % last_commit)
         with update_changed_requirements():
-            run("git pull origin master -f" if git else "hg pull && hg up -C")
-        # manage("collectstatic -v 0 --noinput")
+            run("git pull origin master -f")
+        manage("collectstatic -v 0 --noinput")
         # manage("syncdb --noinput")
         # manage("migrate --noinput")
     restart()
