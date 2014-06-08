@@ -94,7 +94,7 @@ MANAGERS = ADMINS
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['ec2-54-201-114-45.us-west-2.compute.amazonaws.com','*']
+ALLOWED_HOSTS = ['ec2-54-201-114-45.us-west-2.compute.amazonaws.com']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
