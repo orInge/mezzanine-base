@@ -48,7 +48,7 @@ env.manage = "%s/bin/python %s/project/manage.py" % ((env.venv_path,) * 2)
 env.domains = conf.get("DOMAINS", [conf.get("LIVE_HOSTNAME", env.hosts[0])])
 env.domains_nginx = " ".join(env.domains)
 env.domains_python = ", ".join(["'%s'" % s for s in env.domains])
-env.ssl_disabled = "#" if len(env.domains) > 1 else ""
+env.ssl_disabled = "# "
 env.repo_url = conf.get("REPO_URL", "")
 env.git = env.repo_url.startswith("git") or env.repo_url.endswith(".git")
 env.reqs_path = conf.get("REQUIREMENTS_PATH", None)
@@ -72,6 +72,10 @@ templates = {
         "local_path": "deploy/nginx.conf",
         "remote_path": "/etc/nginx/sites-enabled/%(proj_name)s.conf",
         "reload_command": "service nginx restart",
+    },
+    "nginx_global": {
+        "local_path": "deploy/nginx_global.conf",
+        "remote_path": "/etc/nginx/nginx.conf"
     },
     "supervisor": {
         "local_path": "deploy/supervisor.conf",
@@ -457,7 +461,7 @@ def deploy():
     for name in get_templates():
         upload_template_and_reload(name)
     with project():
-        backup("last.db")
+        # backup("last.db")
         static_dir = static()
         if exists(static_dir):
             run("tar -cf last.tar %s" % static_dir)
@@ -466,9 +470,9 @@ def deploy():
         run("%s > last.commit" % last_commit)
         with update_changed_requirements():
             run("git pull origin master -f" if git else "hg pull && hg up -C")
-        manage("collectstatic -v 0 --noinput")
-        manage("syncdb --noinput")
-        manage("migrate --noinput")
+        # manage("collectstatic -v 0 --noinput")
+        # manage("syncdb --noinput")
+        # manage("migrate --noinput")
     restart()
     return True
 
