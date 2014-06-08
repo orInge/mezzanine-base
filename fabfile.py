@@ -361,8 +361,7 @@ def create():
     Create a new virtual environment for a project,
     Pull the project's repo from version control, 
     install mezzanine requirements,
-    add system-level configs for the project, and 
-    initialise database with the live host.
+    add system-level configs for the project.
     """
 
     # Create virtualenv & clone repo
@@ -429,7 +428,7 @@ def deploy():
     Deploy latest version of the project.
     pull latest from vcs,
     install new requirements, 
-    sync and migrate the database,
+    # TODO: sync and migrate the database,
     collect any new static assets, and 
     restart gunicorn's work processes for the project.
     """

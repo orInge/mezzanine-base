@@ -300,24 +300,6 @@ DATABASES = {
     }
 }
 
-# DEPLOY SETTINGS #
-FABRIC = {
-    "SSH_USER": "ubuntu", # SSH username for host deploying to
-    "SSH_KEY_PATH": "~/.ec2/rob-key-pair.pem",
-    "HOSTS": ALLOWED_HOSTS[:1], # List of hosts to deploy to (eg, first host)
-    "DOMAINS": ALLOWED_HOSTS, # Domains for public site
-    "REPO_URL": "https://github.com/orInge/mezzanine-base.git", # Project's repo URL
-    "VIRTUALENV_HOME":  "/home/ubuntu", # Absolute remote path for virtualenvs
-    "PROJECT_NAME": "mezzanine_base", # Unique identifier for project
-    "REQUIREMENTS_PATH": "requirements.txt", # Project's pip requirements
-    "GUNICORN_PORT": 8000, # Port gunicorn will listen on
-    "LOCALE": "en_US.UTF-8", # Should end with ".UTF-8"
-    "DB_PASS": "database", # Live database password
-    "ADMIN_PASS": "admin", # Live admin user password
-    "SECRET_KEY": os.environ.get('SECRET_KEY'),
-    "NEVERCACHE_KEY": os.environ.get('NEVERCACHE_KEY'),
-}
-
 # LOCAL/LIVE SETTINGS #
 if os.environ.get('DATABASE_URL'):
     from live_settings import *
@@ -346,3 +328,23 @@ else:
 LOGGING = {
     'version': 1,
 }
+
+
+# DEPLOY SETTINGS #
+FABRIC = {
+    "SSH_USER": "ubuntu", # SSH username for host deploying to
+    "SSH_KEY_PATH": "~/.ec2/rob-key-pair.pem",
+    "HOSTS": ALLOWED_HOSTS[:1], # List of hosts to deploy to (eg, first host)
+    "DOMAINS": ALLOWED_HOSTS, # Domains for public site
+    "REPO_URL": "https://github.com/orInge/mezzanine-base.git", # Project's repo URL
+    "VIRTUALENV_HOME":  "/home/ubuntu", # Absolute remote path for virtualenvs
+    "PROJECT_NAME": "mezzanine_base", # Unique identifier for project
+    "REQUIREMENTS_PATH": "requirements.txt", # Project's pip requirements
+    "GUNICORN_PORT": 8000, # Port gunicorn will listen on
+    "LOCALE": "en_US.UTF-8", # Should end with ".UTF-8"
+    "DB_PASS": "database", # Live database password
+    "ADMIN_PASS": "admin", # Live admin user password
+    "SECRET_KEY": os.environ.get('SECRET_KEY'),
+    "NEVERCACHE_KEY": os.environ.get('NEVERCACHE_KEY'),
+}
+
