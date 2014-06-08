@@ -363,7 +363,7 @@ def create():
 
     # Create virtualenv & clone repo
     if not exists(env.venv_path): # /home/ubuntu/mezzanine_base
-        sudo("mkdir %s" % env.venv_path)
+        run("mkdir %s" % env.venv_path)
     with cd(env.venv_path):
         if not exists('env'):
             run("virtualenv env")
@@ -376,7 +376,7 @@ def create():
     # Set up project.
     upload_template_and_reload("settings")
     with project(): # /home/ubuntu/mezzanine_base/project
-        pip("-r requirements.txt")
+        pip("-r /home/ubuntu/mezzanine_base/project/requirements.txt")
         pip("setproctitle south psycopg2 "
             "django-compressor python-memcached")
         # manage("createdb --noinput --nodata")

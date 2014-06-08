@@ -1,3 +1,2 @@
 gunicorn
-mysql-python
 Mezzanine==3.1.4
