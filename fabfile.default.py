@@ -40,10 +40,10 @@ env.key_filename = conf.get("SSH_KEY_PATH", None)
 env.hosts = conf.get("HOSTS", [""])
 
 env.proj_name = conf.get("PROJECT_NAME", os.getcwd().split(os.sep)[-1])
-env.venv_home = conf.get("VIRTUALENV_HOME", "/home/%s" % env.user) # /home/ubuntu
-env.venv_path = "%s/%s" % (env.venv_home, env.proj_name) # /home/ubuntu/mezzanine_base
+env.venv_home = conf.get("VIRTUALENV_HOME", "/home/%s" % env.user)
+env.venv_path = "%s/%s" % (env.venv_home, env.proj_name)
 env.proj_dirname = "project"
-env.proj_path = "%s/%s" % (env.venv_path, env.proj_dirname) # /home/ubuntu/mezzanine_base/project
+env.proj_path = "%s/%s" % (env.venv_path, env.proj_dirname)
 env.manage = "%s/bin/python %s/project/manage.py" % ((env.venv_path,) * 2)
 env.domains = conf.get("DOMAINS", [conf.get("LIVE_HOSTNAME", env.hosts[0])])
 env.domains_nginx = " ".join(env.domains)
@@ -64,7 +64,7 @@ env.nevercache_key = conf.get("NEVERCACHE_KEY", "")
 ##################
 
 # Each template gets uploaded at deploy time, only if their
-# contents have changed, in which case, the reload command is
+# contents has changed, in which case, the reload command is
 # also run.
 
 templates = {
@@ -105,7 +105,7 @@ def virtualenv():
     Runs commands within the project's virtualenv.
     """
     with cd(env.venv_path):
-        with prefix("source env/bin/activate"):
+        with prefix("source %s/bin/activate" % env.venv_path):
             yield
 
 
@@ -211,11 +211,11 @@ def upload_template_and_reload(name):
     related service.
     """
     template = get_templates()[name]
-    local_path = template["local_path"] # deploy/local_settings.py.template
+    local_path = template["local_path"]
     if not os.path.exists(local_path):
         project_root = os.path.dirname(os.path.abspath(__file__))
         local_path = os.path.join(project_root, local_path)
-    remote_path = template["remote_path"] # %(proj_path)s/local_settings.py
+    remote_path = template["remote_path"]
     reload_command = template.get("reload_command")
     owner = template.get("owner")
     mode = template.get("mode")
@@ -343,43 +343,81 @@ def install():
     """
     Installs the base system and Python requirements for the entire server.
     """
+    locale = "LC_ALL=%s" % env.locale
+    with hide("stdout"):
+        if locale not in sudo("cat /etc/default/locale"):
+            sudo("update-locale %s" % locale)
+            run("exit")
     sudo("apt-get update -y -q")
     apt("nginx libjpeg-dev python-dev python-setuptools git-core "
-        "libpq-dev memcached supervisor")
+        "postgresql libpq-dev memcached supervisor")
     sudo("easy_install pip")
-    sudo("pip install virtualenv")
+    sudo("pip install virtualenv mercurial")
 
 
 @task
 @log_call
 def create():
     """
-    Create a new virtual environment for a project,
-    Pull the project's repo from version control, 
-    install mezzanine requirements,
-    add system-level configs for the project, and 
-    initialise database with the live host.
+    Create a new virtual environment for a project.
+    Pulls the project's repo from version control, adds system-level
+    configs for the project, and initialises the database with the
+    live host.
     """
 
-    # Create virtualenv & clone repo
-    if not exists(env.venv_path): # /home/ubuntu/mezzanine_base
-        sudo("mkdir %s" % env.venv_path)
-    with cd(env.venv_path):
-        if not exists('env'):
-            run("virtualenv env")
-        if not exists('project'):
-            run("git clone %s project" % (env.repo_url))
+    # Create virtualenv
+    with cd(env.venv_home):
+        if exists(env.proj_name):
+            prompt = input("\nVirtualenv exists: %s"
+                           "\nWould you like to replace it? (yes/no) "
+                           % env.proj_name)
+            if prompt.lower() != "yes":
+                print("\nAborting!")
+                return False
+            remove()
+        run("virtualenv %s --distribute" % env.proj_name)
+        vcs = "git" if env.git else "hg"
+        run("%s clone %s %s" % (vcs, env.repo_url, env.proj_path))
 
-    # TODO: Create DB and DB user.
-    # TODO: Set up SSL certificate.
+    # Create DB and DB user.
+    pw = db_pass()
+    user_sql_args = (env.proj_name, pw.replace("'", "\'"))
+    user_sql = "CREATE USER %s WITH ENCRYPTED PASSWORD '%s';" % user_sql_args
+    psql(user_sql, show=False)
+    shadowed = "*" * len(pw)
+    print_command(user_sql.replace("'%s'" % pw, "'%s'" % shadowed))
+    psql("CREATE DATABASE %s WITH OWNER %s ENCODING = 'UTF8' "
+         "LC_CTYPE = '%s' LC_COLLATE = '%s' TEMPLATE template0;" %
+         (env.proj_name, env.proj_name, env.locale, env.locale))
+
+    # Set up SSL certificate.
+    if not env.ssl_disabled:
+        conf_path = "/etc/nginx/conf"
+        if not exists(conf_path):
+            sudo("mkdir %s" % conf_path)
+        with cd(conf_path):
+            crt_file = env.proj_name + ".crt"
+            key_file = env.proj_name + ".key"
+            if not exists(crt_file) and not exists(key_file):
+                try:
+                    crt_local, = glob(join("deploy", "*.crt"))
+                    key_local, = glob(join("deploy", "*.key"))
+                except ValueError:
+                    parts = (crt_file, key_file, env.domains[0])
+                    sudo("openssl req -new -x509 -nodes -out %s -keyout %s "
+                         "-subj '/CN=%s' -days 3650" % parts)
+                else:
+                    upload_template(crt_local, crt_file, use_sudo=True)
+                    upload_template(key_local, key_file, use_sudo=True)
 
     # Set up project.
     upload_template_and_reload("settings")
-    with project(): # /home/ubuntu/mezzanine_base/project
-        pip("-r requirements.txt")
-        pip("setproctitle south psycopg2 "
+    with project():
+        if env.reqs_path:
+            pip("-r %s/%s" % (env.proj_path, env.reqs_path))
+        pip("gunicorn setproctitle south psycopg2 "
             "django-compressor python-memcached")
-        # manage("createdb --noinput --nodata")
+        manage("createdb --noinput --nodata")
         python("from django.conf import settings;"
                "from django.contrib.sites.models import Site;"
                "Site.objects.filter(id=settings.SITE_ID).update(domain='%s');"
