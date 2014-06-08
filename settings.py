@@ -94,7 +94,7 @@ MANAGERS = ADMINS
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['ec2-54-201-114-45.us-west-2.compute.amazonaws.com','*']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -288,34 +288,37 @@ OPTIONAL_APPS = (
     PACKAGE_NAME_GRAPPELLI,
 )
 
-###################
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": "dev.db",
+        "USER": "",
+        "PASSWORD": "",
+        "HOST": "",
+        "PORT": "",
+    }
+}
+
 # DEPLOY SETTINGS #
-###################
+FABRIC = {
+    "SSH_USER": "ubuntu", # SSH username for host deploying to
+    "SSH_KEY_PATH": "~/.ec2/rob-key-pair.pem",
+    "HOSTS": ALLOWED_HOSTS[:1], # List of hosts to deploy to (eg, first host)
+    "DOMAINS": ALLOWED_HOSTS, # Domains for public site
+    "REPO_URL": "https://github.com/orInge/mezzanine-base.git", # Project's repo URL
+    "VIRTUALENV_HOME":  "/home/ubuntu", # Absolute remote path for virtualenvs
+    "PROJECT_NAME": "mezzanine_base", # Unique identifier for project
+    "REQUIREMENTS_PATH": "requirements.txt", # Project's pip requirements
+    "GUNICORN_PORT": 8000, # Port gunicorn will listen on
+    "LOCALE": "en_US.UTF-8", # Should end with ".UTF-8"
+    "DB_PASS": "database", # Live database password
+    "ADMIN_PASS": "admin", # Live admin user password
+    "SECRET_KEY": os.environ.get('SECRET_KEY'),
+    "NEVERCACHE_KEY": os.environ.get('NEVERCACHE_KEY'),
+}
 
-# These settings are used by the default fabfile.py provided.
-# Check fabfile.py for defaults.
-
-# FABRIC = {
-#     "SSH_USER": "", # SSH username for host deploying to
-#     "HOSTS": ALLOWED_HOSTS[:1], # List of hosts to deploy to (eg, first host)
-#     "DOMAINS": ALLOWED_HOSTS, # Domains for public site
-#     "REPO_URL": "ssh://hg@bitbucket.org/user/project", # Project's repo URL
-#     "VIRTUALENV_HOME":  "", # Absolute remote path for virtualenvs
-#     "PROJECT_NAME": "", # Unique identifier for project
-#     "REQUIREMENTS_PATH": "requirements.txt", # Project's pip requirements
-#     "GUNICORN_PORT": 8000, # Port gunicorn will listen on
-#     "LOCALE": "en_US.UTF-8", # Should end with ".UTF-8"
-#     "DB_PASS": "", # Live database password
-#     "ADMIN_PASS": "", # Live admin user password
-#     "SECRET_KEY": SECRET_KEY,
-#     "NEVERCACHE_KEY": NEVERCACHE_KEY,
-# }
-
-
-#######################
 # LOCAL/LIVE SETTINGS #
-#######################
-
 if os.environ.get('DATABASE_URL'):
     from live_settings import *
 else:
@@ -325,10 +328,7 @@ else:
         pass
 
 
-####################
 # DYNAMIC SETTINGS #
-####################
-
 # set_dynamic_settings() will rewrite globals based on what has been
 # defined so far, in order to provide some better defaults where
 # applicable. We also allow this settings module to be imported
