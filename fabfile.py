@@ -75,7 +75,7 @@ templates = {
     },
     "nginx_global": {
         "local_path": "deploy/nginx_global.conf",
-        "remote_path": "/etc/nginx/nginx.conf"
+        "remote_path": "/etc/nginx/nginx.conf",
         "reload_command": "nginx -s reload",
     },
     "supervisor": {
