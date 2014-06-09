@@ -1,4 +1,3 @@
-** this is a work in progress **
 
 ## Mezzanine configured for fabric deployment to AWS EC2 
 
@@ -11,11 +10,11 @@ AMI ID: `ubuntu-trusty-14.04-amd64-server-20140416.1 (ami-6ac2a85a)`
 
     virtualenv env
     . env/bin/activate
-    pip install future 
     pip install fabric 
 
     git clone https://github.com/orInge/mezzanine-base.git project
     cd project
+    pip install -r requirements.txt
 
     # settings.py
     # change ALLOWED_HOSTS[0] to your ec2 instance public DNS
