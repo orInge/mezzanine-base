@@ -29,6 +29,6 @@ AMI ID: `ubuntu-trusty-14.04-amd64-server-20140416.1 (ami-6ac2a85a)`
     "SSH_KEY_PATH": "~/.ec2/my-key-pair.pem",
 
 
-### Deploy to EC2
+### Deploy to EC2:
 
     fab all

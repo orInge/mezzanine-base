@@ -403,8 +403,8 @@ def remove():
         remote_path = template["remote_path"]
         if exists(remote_path):
             sudo("rm %s" % remote_path)
-    psql("DROP DATABASE IF EXISTS %s;" % env.proj_name)
-    psql("DROP USER IF EXISTS %s;" % env.proj_name)
+    # psql("DROP DATABASE IF EXISTS %s;" % env.proj_name)
+    # psql("DROP USER IF EXISTS %s;" % env.proj_name)
 
 
 ##############
@@ -473,7 +473,7 @@ def rollback():
 @log_call
 def all():
     """
-    Installs everything required on a new system and deploy.
+    Installs everything required on a new system and deploys.
     From the base software, up to the deployed project.
     """
     install()
