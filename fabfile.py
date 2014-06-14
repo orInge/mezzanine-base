@@ -68,9 +68,13 @@ env.nevercache_key = conf.get("NEVERCACHE_KEY", "")
 # also run.
 
 templates = {
-    "nginx": {
+    "nginx_ec2": {
+        "local_path": "deploy/nginx.ec2.conf",
+        "remote_path": "/etc/nginx/nginx.conf",
+        "reload_command": "nginx -s reload",
+    },
+    "nginx_site": {
         "local_path": "deploy/nginx.conf",
-        # "remote_path": "/etc/nginx/nginx.conf",
         "remote_path": "/etc/nginx/sites-enabled/%(proj_name)s.conf",
         "reload_command": "nginx -s reload",
     },
