@@ -119,7 +119,7 @@ def project():
     """
     Runs commands within the project's directory.
     """
-    run('echo project')
+    print_command('project: ' + env.proj_dirname)
     with virtualenv():
         with cd(env.proj_dirname):
             yield
@@ -131,7 +131,7 @@ def update_changed_requirements():
     Checks for changes in the requirements file across an update,
     and gets new requirements if changes have occurred.
     """
-    run("echo update_changed_requirements")
+    print_command("update_changed_requirements")
     reqs_path = join(env.proj_path, env.reqs_path)
     get_reqs = lambda: run("cat %s" % reqs_path, show=False)
     old_reqs = get_reqs() if env.reqs_path else ""
@@ -217,7 +217,7 @@ def upload_template_and_reload(name):
     Uploads a template only if it has changed, and if so, reload a
     related service.
     """
-    run('echo upload_template_and_reload')
+    print_command('upload_template_and_reload: ' + name)
     template = get_templates()[name]
     local_path = template["local_path"] # deploy/local_settings.py.template
     if not os.path.exists(local_path):
@@ -436,6 +436,8 @@ def deploy():
     collect any new static assets, and 
     restart gunicorn's work processes for the project.
     """
+    # ensure global nginx conf loads first
+    upload_template_and_reload('nginx_ec2')
     for name in get_templates():
         upload_template_and_reload(name)
     with project(): # /home/ubuntu/mezzanine_base/project
