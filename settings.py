@@ -336,7 +336,7 @@ FABRIC = {
     "SSH_KEY_PATH": "~/.ec2/rob-key-pair.pem",
     "HOSTS": ALLOWED_HOSTS[:1], # List of hosts to deploy to (eg, first host)
     "DOMAINS": ALLOWED_HOSTS, # Domains for public site
-    "REPO_URL": "https://github.com/orInge/mezzanine-base.git", # Project's repo URL
+    "REPO_URL": "https://github.com/robcmills/mezzanine-base.git", # Project's repo URL
     "VIRTUALENV_HOME":  "/home/ubuntu", # Absolute remote path for virtualenvs
     "PROJECT_NAME": "mezzanine_base", # Unique identifier for project
     "REQUIREMENTS_PATH": "requirements.txt", # Project's pip requirements
