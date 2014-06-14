@@ -70,12 +70,8 @@ env.nevercache_key = conf.get("NEVERCACHE_KEY", "")
 templates = {
     "nginx": {
         "local_path": "deploy/nginx.conf",
-        "remote_path": "/etc/nginx/sites-enabled/%(proj_name)s.conf",
-        "reload_command": "nginx -s reload",
-    },
-    "nginx_global": {
-        "local_path": "deploy/nginx_global.conf",
         "remote_path": "/etc/nginx/nginx.conf",
+        # "remote_path": "/etc/nginx/sites-enabled/%(proj_name)s.conf",
         "reload_command": "nginx -s reload",
     },
     "supervisor": {
@@ -353,7 +349,7 @@ def install():
     """
     sudo("apt-get update -y -q")
     apt("nginx libjpeg-dev python-dev python-setuptools git-core "
-        "libpq-dev memcached supervisor")
+        "sqlite3 libpq-dev memcached supervisor")
     sudo("easy_install pip")
     sudo("pip install virtualenv")
 
