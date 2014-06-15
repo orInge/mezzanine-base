@@ -5,3 +5,4 @@
 local_settings.py
 live_settings.py
 /static
+dev.db
