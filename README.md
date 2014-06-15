@@ -32,3 +32,7 @@ AMI ID: `ubuntu-trusty-14.04-amd64-server-20140416.1 (ami-6ac2a85a)`
 ### Deploy to EC2:
 
     fab all
+
+### Create DB
+
+    python manage.py createdb
