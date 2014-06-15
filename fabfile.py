@@ -250,6 +250,16 @@ def upload_template_and_reload(name):
         sudo(reload_command)
 
 
+@task
+def upload_template_and_restart(name):
+    """
+    Uploads a template only if it has changed, and if so, reload a
+    related service and then restart 
+    """
+    upload_template_and_reload(name)
+    restart()
+
+
 def db_pass():
     """
     Prompts for the database password if unknown.
