@@ -12,7 +12,7 @@ AMI ID: `ubuntu-trusty-14.04-amd64-server-20140416.1 (ami-6ac2a85a)`
     . env/bin/activate
     pip install fabric 
 
-    git clone https://github.com/orInge/mezzanine-base.git project
+    git clone https://github.com/robcmills/mezzanine-base.git project
     cd project
     pip install -r requirements.txt
 
